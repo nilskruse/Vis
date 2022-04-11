@@ -9,11 +9,31 @@ public:
   std::string text;
 
   Vec3 convertPosToHSV(float x, float y) {
-    // TODO:
-    // enter code here that interprets the mouse's
-    // x, y position as H ans S (I suggest to set
-    // V to 1.0) and converts that tripple to RGB
-    return Vec3{x,y,1.0f};
+    // set HSV
+    float H = x * 360.0f;
+    float Sv = y;
+    float V = 1.0f;
+
+    //calculate C, H' and X
+    float C = V * Sv;
+    float Hs = H / 60.0f;
+
+    float X = C * (1 - std::abs(std::fmod(Hs,2) - 1));
+
+    //calculate (R_1, G_1, B_1) according to wikipedia 
+    Vec3 rgb;
+    if(0 <= Hs && Hs < 1) rgb = Vec3{C,X,0};
+    if(1 <= Hs && Hs < 2) rgb = Vec3{X,C,0};
+    if(2 <= Hs && Hs < 3) rgb = Vec3{0,C,X};
+    if(3 <= Hs && Hs < 4) rgb = Vec3{0,X,C};
+    if(4 <= Hs && Hs < 5) rgb = Vec3{X,0,C};
+    if(5 <= Hs && Hs < 6) rgb = Vec3{C,0,X};
+
+    //calculate m, add to rgb vector and return result
+    float m = V - C;
+    Vec3 mVec = Vec3{m,m,m};
+
+    return rgb + mVec; 
   }
   
   virtual void init() {
