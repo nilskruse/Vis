@@ -1,0 +1,19 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-Wall",
+      "-std=c++17",
+      "-Wunreachable-code",
+      "-I.",
+      "-I../Utils",
+      "-o",
+      "main.o",
+      "main.cpp"
+    ],
+    "directory": "/home/nils/coding/Vis/01_IP",
+    "file": "/home/nils/coding/Vis/01_IP/main.cpp",
+    "output": "/home/nils/coding/Vis/01_IP/main.o"
+  }
+]

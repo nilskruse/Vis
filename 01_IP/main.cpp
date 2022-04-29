@@ -15,6 +15,24 @@ public:
   
   void toGrayscale(bool uniform=false) {
     // TODO: convert image to grayscale
+    for (uint32_t y = 0;y<image.height;++y) {
+      for (uint32_t x = 0;x<image.width;++x) {
+        float r = image.getValue(x, y, 0);
+        float g = image.getValue(x, y, 1);
+        float b = image.getValue(x, y, 2);
+
+        float val;
+        if(uniform){
+          val = r * 0.299f + g * 0.587f + b * 0.114f;
+        } else {
+          val = r / 3.0f + g / 3.0f + b / 3.0f;
+        }
+
+        image.setValue(x, y, 0, val);
+        image.setValue(x, y, 1, val);
+        image.setValue(x, y, 2, val);
+      }
+    }
   }
 
   void loadImage() {
