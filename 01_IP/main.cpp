@@ -1,9 +1,11 @@
+#include <cstdint>
 #include <iomanip>
 #include <fstream>
 
 #include <GLApp.h>
 #include <bmp.h>
 #include <Grid2D.h>
+#include <ostream>
 
 class GLIPApp : public GLApp {
 public:
@@ -74,6 +76,39 @@ public:
   
   void filter(const Grid2D& filter) {
     // TODO: apply filter to image
+    Image tempImage = Image(image);
+    int filterWidth = filter.getWidth();
+    int filterHeight = filter.getHeight();
+    
+    for (uint32_t y = 0;y<image.height;++y) {
+      for (uint32_t x = 0;x<image.width;++x) {
+        for(uint32_t c = 0; c < 3; c++){
+          Grid2D tempMatrix = Grid2D(filterWidth, filterHeight);
+
+          tempMatrix.setValue(0,0,tempImage.getValue((x - 1) % image.width, (y - 1) % image.height, c));
+          tempMatrix.setValue(1,0,tempImage.getValue( x                   , (y - 1) % image.height, c));
+          tempMatrix.setValue(2,0,tempImage.getValue((x + 1) % image.width, (y - 1) % image.height, c));
+
+          tempMatrix.setValue(0,1,tempImage.getValue((x - 1) % image.width,  y    , c));
+          tempMatrix.setValue(1,1,tempImage.getValue( x                   ,  y    , c));
+          tempMatrix.setValue(2,1,tempImage.getValue((x + 1) % image.width,  y    , c));
+
+          tempMatrix.setValue(0,2,tempImage.getValue((x - 1) % image.width, (y + 1) % image.height, c));
+          tempMatrix.setValue(1,2,tempImage.getValue( x                   , (y + 1) % image.height, c));
+          tempMatrix.setValue(2,2,tempImage.getValue((x + 1) % image.width, (y + 1) % image.height, c));
+
+          float value = 0.0f;
+          for(int i = 0; i < 3; i++){
+            for(int j = 0; j < 3; j++){
+              value += tempMatrix.getValue(i,j) * filter.getValue(j,i);
+            }
+          }
+
+          image.setValue(x,y,c,std::sqrt(value * value)); 
+        }
+      }
+    }
+
   }
   
   virtual void keyboard(int key, int scancode, int action, int mods) override {
@@ -88,6 +123,16 @@ public:
             mean.fill(1.0f/(mean.getHeight()*mean.getWidth()));
             filter(mean);
           }
+          break;
+        case GLFW_KEY_E :
+          filter({3,3, { -1, -1, -1,
+                         -1,  8, -1,
+                         -1, -1, -1 }});
+          break;
+        case GLFW_KEY_I :
+          filter({3,3, { 0, 1, 0,
+                         0, 1, 0,
+                         0, 0, 0}});
           break;
         case GLFW_KEY_A :
           filter({3,3, {-1, 0, 1,
