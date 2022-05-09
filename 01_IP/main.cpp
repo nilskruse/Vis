@@ -1,3 +1,4 @@
+#include <cmath>
 #include <cstdint>
 #include <iomanip>
 #include <fstream>
@@ -70,6 +71,15 @@ public:
     std::stringstream ss;
 
     // TODO: convert image to ASCII-Art
+
+    for (uint32_t y = image.height; y > 0; y -= 4) {
+      for (uint32_t x = 0;x<image.width;x += 2) {
+        float value = (image.getValue(x,y,0) + image.getValue(x,y,1) + image.getValue(x,y,2)) / 3.0f;
+        int lookup =  std::floor((value / 255.0f * lut.length()));
+        ss << lut[lookup];
+      }
+      ss << "\n";
+    }
 
     return ss.str();
   }
